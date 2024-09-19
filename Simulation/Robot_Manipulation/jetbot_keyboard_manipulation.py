@@ -26,7 +26,10 @@ from omni.isaac.wheeled_robots.controllers.wheel_base_pose_controller import Whe
 # Robot specific controller
 from omni.isaac.wheeled_robots.controllers.differential_controller import DifferentialController
 
+# loosely based on:
+# https://forums.developer.nvidia.com/t/how-to-use-keyboard-control-a-robot-in-a-python-standalong-application/202829/2
 
+# Example of constructed controller (not used in code below)
 class CoolController(BaseController):
     def __init__(self):
         super().__init__(name="my_cool_controller")
@@ -58,14 +61,17 @@ class KeyboardRobot(BaseSample):
         self.world.scene.add_default_ground_plane()  # Get the World
         assets_root_path = get_assets_root_path()
         jetbot_asset_path = assets_root_path + "/Isaac/Robots/Jetbot/jetbot.usd"
-        self.jetbot = self.world.scene.add(
-            WheeledRobot(
+        self.robot_type = WheeledRobot(
                 prim_path="/World/Fancy_Robot",
                 name="fancy_robot",
                 wheel_dof_names=["left_wheel_joint", "right_wheel_joint"],
                 create_robot=True,
                 usd_path=jetbot_asset_path,
             )
+        print(type(self.robot_type))
+        
+        self.jetbot = self.world.scene.add(
+            self.robot_type
         )
         
         self.controller = DifferentialController(name="simple_control", wheel_radius=0.03, wheel_base=0.1125)  # Create the Controller
