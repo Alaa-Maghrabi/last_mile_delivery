@@ -1,17 +1,30 @@
 import argparse
+import isaacsim
 
-from omni.isaac.lab.app import AppLauncher
+from isaacsim import SimulationApp
 
-# add argparse arguments
-parser = argparse.ArgumentParser(description="This script demonstrates different legged robots.")
-# append AppLauncher cli args
-AppLauncher.add_app_launcher_args(parser)
-# parse the arguments
-args_cli = parser.parse_args()
+simulation_app = SimulationApp({"headless": False})
+#
+from omni.isaac.core.utils.extensions import enable_extension
 
-# launch omniverse app
-app_launcher = AppLauncher(args_cli)
-simulation_app = app_launcher.app
+# enable_extension("omni.replicator.isaac")
+
+import omni.kit.commands
+import omni.usd
+from omni.isaac.dynamic_control import _dynamic_control
+
+# from omni.isaac.lab.app import AppLauncher
+
+# # add argparse arguments
+# parser = argparse.ArgumentParser(description="This script demonstrates different legged robots.")
+# # append AppLauncher cli args
+# AppLauncher.add_app_launcher_args(parser)
+# # parse the arguments
+# args_cli = parser.parse_args()
+
+# # launch omniverse app
+# app_launcher = AppLauncher(args_cli)
+# simulation_app = app_launcher.app
 
 """Rest everything follows."""
 
@@ -23,13 +36,7 @@ import omni.isaac.core.utils.prims as prim_utils
 import omni.isaac.lab.sim as sim_utils
 from omni.isaac.lab.assets import Articulation
 
-import omni.kit.commands
-import omni.usd
-from omni.isaac.core.utils.extensions import enable_extension
-from omni.isaac.dynamic_control import _dynamic_control
-
-
-from omni.isaac.lab_assets.anymal import ANYMAL_C_CFG 
+from omni.isaac.lab_assets.anymal import ANYMAL_C_CFG
 
 
 def define_origins(num_origins: int, spacing: float) -> list[list[float]]:
@@ -64,7 +71,7 @@ def design_scene() -> tuple[dict, list[list[float]]]:
 
     # Load the USD file for the TOK scene
     usd_scene_cfg = sim_utils.UsdFileCfg(
-        usd_path="/home/alaa/Downloads/TOK.usd",  # Specify the correct path to your TOK.usd file
+        usd_path="/home/spyros/Elm/Digital_Twins/Tokyo_Complete/TOK.usd",  # Specify the correct path to your TOK.usd file
     )
 
     # Spawn the USD scene in the simulation
@@ -72,7 +79,7 @@ def design_scene() -> tuple[dict, list[list[float]]]:
 
     # -- Robot
     anymal_c = Articulation(ANYMAL_C_CFG.replace(prim_path="/World/Origin1/Robot"))
-    
+
     # return the scene information
     scene_entities = {
         "anymal_c": anymal_c,
