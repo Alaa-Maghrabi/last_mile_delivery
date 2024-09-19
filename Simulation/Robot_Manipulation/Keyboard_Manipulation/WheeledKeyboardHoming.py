@@ -1,10 +1,21 @@
-# The way INHERITANCE works in Isaac is shown below. Basically, in order to import packages 
-# you need to run simulation_app = SimulationApp({"headless": False}) in the file. 
-# However, you cannot have more than one simulations running, and when you import 
-# the parent class, you automatically start a simulation. Therefore, ensure all 
-# packages of interest are in the parent class. Not sure how well this works with multiple files.
-from WheeledKeyboard import *
-from WheeledKeyboard import KeyboardWheeledRobot
+import sys
+import os
+
+currentdir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(currentdir)
+
+try:
+    # The way INHERITANCE works in Isaac is shown below. Basically, in order to import packages 
+    # you need to run simulation_app = SimulationApp({"headless": False}) in the file. 
+    # However, you cannot have more than one simulations running, and when you import 
+    # the parent class, you automatically start a simulation. Therefore, ensure all 
+    # packages of interest are in the parent class. Not sure how well this works with multiple files.
+    from WheeledKeyboard import *
+    from WheeledKeyboard import KeyboardWheeledRobot
+    
+except ImportError as e:
+    print(f'Import error in {os.path.basename(__file__)}')
+    raise e
 
 # loosely based on:
 # https://forums.developer.nvidia.com/t/how-to-use-keyboard-control-a-robot-in-a-python-standalong-application/202829/2
