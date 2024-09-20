@@ -1,10 +1,11 @@
 import sys
 import os
 
-currentdir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(currentdir)
-
 try:
+    
+    currentdir = os.path.dirname(os.path.abspath(__file__))  # Digital_Twin
+    sys.path.append(currentdir)
+
     from USDLoad import *
     from USDLoad import USDLoader
 

@@ -1,13 +1,14 @@
 import sys
 import os
 
-from pathlib import Path
-
-currentdir = os.path.dirname(os.path.abspath(__file__))
-parentdir = Path(currentdir).parent.absolute()
-sys.path.append(str(parentdir))
-
 try:
+    
+    from pathlib import Path
+
+    currentdir = os.path.dirname(os.path.abspath(__file__))  # Mains
+    parentdir = Path(currentdir).parent.absolute()  # Simulation
+    sys.path.append(str(parentdir))
+
     from Robot_Manipulation.Keyboard_Manipulation.WheeledKeyboardHoming import *
     from Robot_Manipulation.Keyboard_Manipulation.WheeledKeyboardHoming import KeyboardWheeledRobotHoming
     

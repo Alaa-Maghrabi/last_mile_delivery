@@ -2,42 +2,16 @@ import sys
 import os
 
 try:
-    from isaacsim import SimulationApp
+    from pathlib import Path
 
-    simulation_app = SimulationApp({"headless": False})
 
-    from omni.isaac.core.utils.extensions import enable_extension
-
-    enable_extension("omni.isaac.examples")
-
-    import carb  # Used for input handling
-    import omni.ext
-    import omni.appwindow  # Contains handle to keyboard
-    import gc
-    import numpy as np
-    from omni.isaac.wheeled_robots.robots import WheeledRobot
-    from omni.isaac.wheeled_robots.controllers.differential_controller import (
-        DifferentialController,
-    )
-    from omni.isaac.examples.base_sample import BaseSample
-    from omni.isaac.core.utils.viewports import set_camera_view
-    from omni.isaac.core.utils.nucleus import get_assets_root_path
-
-    from omni.isaac.core import World
-
-    # Controller
-    from omni.isaac.core.utils.types import ArticulationAction
-    from omni.isaac.core.controllers import BaseController
-
-    # This extension includes several generic controllers that could be used with multiple robots
-    from omni.isaac.wheeled_robots.controllers.wheel_base_pose_controller import (
-        WheelBasePoseController,
-    )
-
-    # Robot specific controller
-    from omni.isaac.wheeled_robots.controllers.differential_controller import (
-        DifferentialController,
-    )
+    currentdir = os.path.dirname(os.path.abspath(__file__))
+    parentdir = Path(currentdir).parent.absolute()  # Robot_manipulation
+    simulation_dir = Path(currentdir).parent.parent.absolute()  # Simulation
+    sys.path.append(str(simulation_dir))
+    
+    from Master_Simluation_Loader import *
+    
 except ImportError as e:
     print(f'Import error in {os.path.basename(__file__)}')
     raise e

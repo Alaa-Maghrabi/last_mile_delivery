@@ -1,10 +1,11 @@
 import sys
 import os
 
-currentdir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(currentdir)
-
 try:
+    
+    currentdir = os.path.dirname(os.path.abspath(__file__))  # Keyboard_Manipulation
+    sys.path.append(currentdir)
+
     # The way INHERITANCE works in Isaac is shown below. Basically, in order to import packages 
     # you need to run simulation_app = SimulationApp({"headless": False}) in the file. 
     # However, you cannot have more than one simulations running, and when you import 
