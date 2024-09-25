@@ -80,7 +80,13 @@ try:
     parser.add_argument(
         "--test", default=False, action="store_true", help="Run in test mode"
     )
-    args, unknown = parser.parse_known_args()    
+    args, unknown = parser.parse_known_args() 
+    
+    # Sensors
+    ## Lidar
+    from pxr import UsdGeom, Gf, UsdPhysics, Semantics              # pxr usd imports used to create cube
+    
+       
 except ImportError as e:
     print(f'Import error in {os.path.basename(__file__)}')
     raise e
