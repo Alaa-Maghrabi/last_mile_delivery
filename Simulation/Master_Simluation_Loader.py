@@ -82,11 +82,19 @@ try:
     )
     args, unknown = parser.parse_known_args() 
     
-    # Sensors
-    ## Lidar
-    from pxr import UsdGeom, Gf, UsdPhysics, Semantics              # pxr usd imports used to create cube
+    ###################################################
+    ################## SENSORS ########################
+    ###################################################
     
-       
+    #  #  #  #  #  #  #  LIDAR  #  #  #  #  #  #  #  #
+    from pxr import UsdGeom, Gf, UsdPhysics, Semantics              # pxr usd imports used to create cube
+    # enable_extension("omni.isaac.sensor")
+    # enable_extension("omni.isaac.range_sensor")
+    # enable_extension("omni.isaac.occupancy_map")
+
+    # from omni.isaac.range_sensor import _range_sensor               # Imports the python bindings to interact with lidar sensor
+    
+
 except ImportError as e:
     print(f'Import error in {os.path.basename(__file__)}')
     raise e

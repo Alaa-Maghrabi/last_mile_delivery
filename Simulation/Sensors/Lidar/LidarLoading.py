@@ -11,6 +11,12 @@ try:
 
     from Master_Simluation_Loader import *
 
+    # For some reason, _range_sensor needs to be imported in the current script
+    from omni.isaac.range_sensor import (
+        _range_sensor,
+    )  # Imports the python bindings to interact with lidar sensor
+
+
 except ImportError as e:
     print(f"Import error in {os.path.basename(__file__)}")
     raise e
@@ -31,6 +37,7 @@ class LidarLoader(BaseSample):
         )
         self.lidar_name = "/Lidar"
         self.complete_lidar_path = None
+        self.lidarInterface = None
 
         self.lidar_result = None
         self.lidarParameters = {
@@ -60,6 +67,7 @@ class LidarLoader(BaseSample):
     def create_scene(self, path_to_physics_scene: str = "/World/PhysicsScene"):
         # Taken from https://docs.omniverse.nvidia.com/isaacsim/latest/advanced_tutorials/tutorial_advanced_range_sensor_lidar.html
         self.stage = omni.usd.get_context().get_stage()  # Used to access Geometry
+        self.lidarInterface = _range_sensor.acquire_lidar_sensor_interface()
         self.timeline = (
             omni.timeline.get_timeline_interface()
         )  # Used to interact with simulation
@@ -72,7 +80,7 @@ class LidarLoader(BaseSample):
         for param in list(lidarParams.keys()):
 
             if param in list(self.lidarParameters.keys()):
-                print(f'Updating parameter: {param}')
+                print(f"Updating parameter: {param}")
                 self.lidarParameters[param] = lidarParams[param]
 
     def define_lidar_name(self, lidar_name: str):
@@ -98,6 +106,9 @@ class LidarLoader(BaseSample):
         self.lidarParameters["path"] = self.lidar_name
         self.lidarParameters["parent"] = self.lidar_parent
 
+        print(f"Created Lidar with the following parameters: \n")
+        print(self.lidarParameters)
+
         self.lidar_result, self.lidar_prim = omni.kit.commands.execute(
             type_of_lidar, **self.lidarParameters
         )
@@ -106,10 +117,34 @@ class LidarLoader(BaseSample):
 
         UsdGeom.XformCommonAPI(self.lidar_prim).SetTranslate(location)
 
+    def get_lidar_data(self):
+
+        # self.timeline.pause()
+        depth = self.lidarInterface.get_linear_depth_data(self.complete_lidar_path)
+        zenith = self.lidarInterface.get_zenith_data(self.complete_lidar_path)
+        azimuth = self.lidarInterface.get_azimuth_data(self.complete_lidar_path)
+
+        # Documentation https://docs.omniverse.nvidia.com/py/isaacsim/source/extensions/omni.isaac.range_sensor/docs/index.html?highlight=get_prim_data
+        pointcloud = self.lidarInterface.get_point_cloud_data(self.complete_lidar_path)
+
+        # Realistically you wont need this, it just tells you the ID of every item touched by
+        # a lidar beam, which you wont know practically
+        semantics = self.lidarInterface.get_prim_data(
+            self.complete_lidar_path
+        )  # get_semantic was deprecated
+
+        print(f"{type(pointcloud)}")  # numpy array
+        # The hit position in xyz relative to the sensor origin, not accounting for individual ray offsets
+        # pointcloud is hence each point in the FOV along with its x y z
+        print(f"Shape of pointcloud: {pointcloud.shape}")  # 150 x 76 x 3
+        
+        # NOTE: if you want to save the pointcloud as a ply file, use open3d:
+        # https://stackoverflow.com/questions/62948421/how-to-create-point-cloud-file-ply-from-vertices-stored-as-numpy-array
+
 
 # Example usage
 if __name__ == "__main__":
-    
+
     example_world = World()
 
     lidar = LidarLoader()
@@ -118,8 +153,8 @@ if __name__ == "__main__":
 
     lidar_name = "LidarExample"
     lidar.define_lidar_name(lidar_name=lidar_name)
-    
-    parent_name = 'World'
+
+    parent_name = "World"
     lidar.define_lidar_parent(parent=parent_name)
 
     # Below, the "random_key" is not loaded in the lidar
@@ -128,21 +163,23 @@ if __name__ == "__main__":
         "draw_lines": True,
         "vertical_fov": 30.0,
         "random_key": 500.0,
-        "rotation_rate": 10.0
+        "rotation_rate": 10.0,
     }
     lidar.define_lidar_parameters(lidarParams=lidar_params)
-    
+
     lidar.create_lidar(type_of_lidar="RangeSensorCreateLidar")
-    
+
     starting_location = (-0.232, 0.0, 0.514)
     lidar.translate_lidar(location=starting_location)
-    
+
     lidar.world.reset()
-    
+
     while simulation_app.is_running():
         lidar.world.step(render=True)
         if lidar.world.is_playing():
             if lidar.world.current_time_step_index == 0:
                 lidar.world.reset()
+
+            lidar.get_lidar_data()
 
     simulation_app.close()
