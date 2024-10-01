@@ -94,6 +94,10 @@ try:
 
     # from omni.isaac.range_sensor import _range_sensor               # Imports the python bindings to interact with lidar sensor
     
+        #  #  #  #  #  #  #  Camera  #  #  #  #  #  #  #  #
+    from omni.isaac.sensor import Camera
+
+    
 
 except ImportError as e:
     print(f'Import error in {os.path.basename(__file__)}')

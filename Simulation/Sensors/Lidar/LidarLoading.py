@@ -133,7 +133,6 @@ class LidarLoader(BaseSample):
             self.complete_lidar_path
         )  # get_semantic was deprecated
 
-        print(f"{type(pointcloud)}")  # numpy array
         # The hit position in xyz relative to the sensor origin, not accounting for individual ray offsets
         # pointcloud is hence each point in the FOV along with its x y z
         print(f"Shape of pointcloud: {pointcloud.shape}")  # 150 x 76 x 3
