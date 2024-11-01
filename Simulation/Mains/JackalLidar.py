@@ -23,6 +23,37 @@ except ImportError as e:
     raise e
 
 
+def setup_ros2_lidar_publisher(lidar_prim_path):
+    """ Set up ROS2 bridge for streaming LIDAR data. """
+    keys = og.Controller.Keys
+
+    # Define the OmniGraph path and ROS2 nodes
+    graph_path = "/ActionGraph"
+    lidar_topic = "/jackal/lidar"
+
+    og.Controller.edit(
+        {"graph_path": graph_path, "evaluator_name": "execution"},
+        {
+            keys.CREATE_NODES: [
+                ("Context", "omni.isaac.ros2_bridge.ROS2Context"),
+                ("LidarPublisher", "omni.isaac.ros2_bridge.ROS2LidarHelper"),
+            ],
+            keys.CONNECT: [
+                # Connect the context to the lidar publisher
+                ("Context.outputs:context", "LidarPublisher.inputs:context"),
+            ],
+            keys.SET_VALUES: [
+                # Set ROS2 topic and prim path for the LIDAR publisher
+                ("LidarPublisher.inputs:frameId", "sim_lidar"),
+                ("LidarPublisher.inputs:topicName", lidar_topic),
+                ("LidarPublisher.inputs:sensorPrimPath", lidar_prim_path),
+                ("Context.inputs:domain_id", 1),
+            ],
+        },
+    )
+
+    return graph_path
+
 def main():
     
     ############# ROBOT
@@ -42,7 +73,7 @@ def main():
         create_robot=True,
         usd_path=jackal_asset_path,
     )
-    #wheel_dof_names=["front_left_wheel", "front_right_wheel", "rear_left_wheel", "rear_right_wheel"],
+
     # Controller
     example_controller = DifferentialController(
         name="simple_control", wheel_radius=0.098, wheel_base=0.37558
@@ -66,7 +97,6 @@ def main():
     lidar.define_lidar_name(lidar_name=lidar_name)
     
     # Note, for Jackal, the lidar should be placed at 
-    # /World/JackalBot/base_link/visuals/mesh_6
     parent_name = jackal_prim_path + "/base_link/visuals/mesh_6"
     lidar.define_lidar_parent(parent=parent_name)
 
@@ -86,8 +116,12 @@ def main():
     starting_location = (0.0, 0.0, 0.02)  # Manually displace lidar from 0 0 0
     lidar.translate_lidar(location=starting_location)
 
+    # Set up ROS2 LIDAR publisher using OmniGraph
+    lidar_ros2_graph = setup_ros2_lidar_publisher(lidar_prim_path=f"{jackal_prim_path}/base_link/visuals/mesh_6/LidarExample")    
+
     ########### MAIN LOOP
     robot.world.reset()
+    frame = 0
 
     while simulation_app.is_running():
         robot.world.step(render=True)
@@ -96,7 +130,12 @@ def main():
                 robot.world.reset()
                 robot.controller.reset()
 
+
+            # Trigger ROS2 publishing every 5 frames
+            og.Controller.attribute(lidar_ros2_graph + "/LidarPublisher.inputs:step").set(frame % 5 == 0)
+
             robot.sim_step()
+            frame = frame + 1
 
     simulation_app.close()
     

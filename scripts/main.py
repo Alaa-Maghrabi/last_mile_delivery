@@ -13,6 +13,7 @@ import omni.kit.commands
 import omni.usd
 from omni.isaac.dynamic_control import _dynamic_control
 
+
 # from omni.isaac.lab.app import AppLauncher
 
 # # add argparse arguments
@@ -71,7 +72,7 @@ def design_scene() -> tuple[dict, list[list[float]]]:
 
     # Load the USD file for the TOK scene
     usd_scene_cfg = sim_utils.UsdFileCfg(
-        usd_path="/home/spyros/Elm/Digital_Twins/Tokyo_Complete/TOK.usd",  # Specify the correct path to your TOK.usd file
+        usd_path="/home/alaa/Downloads/TOK.usd",  # Specify the correct path to your TOK.usd file
     )
 
     # Spawn the USD scene in the simulation

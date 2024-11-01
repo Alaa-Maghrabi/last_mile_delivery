@@ -96,6 +96,13 @@ try:
     
         #  #  #  #  #  #  #  Camera  #  #  #  #  #  #  #  #
     from omni.isaac.sensor import Camera
+    import omni.graph.core as og
+    
+    # enable ROS2 bridge extension
+    enable_extension("omni.isaac.ros2_bridge")
+
+    simulation_app.update()
+
 
     
 
