@@ -1,1 +1,5 @@
 *.usd
+
+# Making sure some of the big folders are not uploaded
+logs/
+_isaac_sim/
