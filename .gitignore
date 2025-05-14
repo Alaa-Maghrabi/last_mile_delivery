@@ -4,3 +4,8 @@
 logs/
 _isaac_sim/
 outputs/
+
+# Ensure the big files are not uploaded when using isaaclab
+*.pt
+*.mp4
+*.avi
